@@ -5,7 +5,7 @@
 ## 설치 방법
 
 1. Chrome 웹 스토어에서 Tampermonkey 확장 프로그램을 설치합니다.
-2. [여기를 클릭하여 스크립트를 설치](직접 다운로드 링크)
+2. [여기를 클릭하여 스크립트를 설치](https://raw.githubusercontent.com/Alt030/g2b-highlighter/main/g2b-highlighter.user.js)
 3. Tampermonkey가 자동으로 설치 창을 띄웁니다.
 4. "설치" 버튼을 클릭합니다.
 
