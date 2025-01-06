@@ -8,6 +8,9 @@
 2. [여기를 클릭하여 스크립트를 설치](https://raw.githubusercontent.com/Alt030/g2b-highlighter/main/g2b-highlighter.user.js)
 3. Tampermonkey가 자동으로 설치 창을 띄웁니다.
 4. "설치" 버튼을 클릭합니다.
+5. '확장프로그램 관리'에 들어가서 개발자 모드를 체크합니다.
+6. 업데이트 버튼을 눌러주세요.
+7. 나라장터를 새로고침해주세요.
 
 ## 주요 기능
 
