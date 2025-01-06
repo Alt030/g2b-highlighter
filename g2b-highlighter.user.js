@@ -17,7 +17,6 @@
         style.textContent = `
             .bid-highlighted {
                 color: green !important;
-                font-weight: bold !important;
                 text-decoration: none !important;
             }
             .bid-highlighted:visited {
