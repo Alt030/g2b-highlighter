@@ -28,18 +28,24 @@
 
     // 클릭 이벤트 핸들러 - 이벤트 위임 방식 사용
     const handleBidClick = (event) => {
-        // 공고명 링크 클릭 확인
         const link = event.target.closest('td[col_id="bidPbancNm"] nobr a');
         if (!link) return;
 
         const bidName = link.innerText.trim();
+        const bidRow = link.closest('tr');
+        const bidNumberCell = bidRow.querySelector('td[col_id="bidPbancUntyNoOrd"] nobr');
+        const bidNumber = bidNumberCell ? bidNumberCell.innerText.trim() : '';
+
+        if (!bidNumber) return;
+
         const clickedBids = JSON.parse(localStorage.getItem('clickedBids')) || [];
+        const bidIdentifier = `${bidName}||${bidNumber}`;
 
         // 중복 체크 후 저장
-        if (!clickedBids.includes(bidName)) {
-            clickedBids.push(bidName);
+        if (!clickedBids.includes(bidIdentifier)) {
+            clickedBids.push(bidIdentifier);
             localStorage.setItem('clickedBids', JSON.stringify(clickedBids));
-            console.log(`Saved bid: ${bidName}`);
+            console.log(`Saved bid: ${bidName} (${bidNumber})`);
         }
     };
 
@@ -51,7 +57,14 @@
         bidLinks.forEach(link => {
             link.classList.add('processed');
             const bidName = link.innerText.trim();
-            if (clickedBids.includes(bidName)) {
+            const bidRow = link.closest('tr');
+            const bidNumberCell = bidRow.querySelector('td[col_id="bidPbancUntyNoOrd"] nobr');
+            const bidNumber = bidNumberCell ? bidNumberCell.innerText.trim() : '';
+
+            if (!bidNumber) return;
+
+            const bidIdentifier = `${bidName}||${bidNumber}`;
+            if (clickedBids.includes(bidIdentifier)) {
                 link.classList.add('bid-highlighted');
             }
         });
@@ -98,7 +111,6 @@
 
     // 페이지 로드 및 뒤로가기 처리
     window.addEventListener('pageshow', (event) => {
-        // bfcache에서 복원된 경우에도 실행
         if (event.persisted) {
             console.log('Page restored from bfcache');
         }
