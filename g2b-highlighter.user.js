@@ -5,8 +5,8 @@
 // @description  Virtual scroll 환경에서의 입찰공고 하이라이트 기능(공고번호 포함)
 // @author       You
 // @match        https://www.g2b.go.kr/*
-// @downloadURL  https://raw.githubusercontent.com/Alt030/g2b-highlighter/main/g2b-highlighter.user.js
-// @updateURL    https://raw.githubusercontent.com/Alt030/g2b-highlighter/main/g2b-highlighter.user.js
+// @downloadURL  https://github.com/Alt030/g2b-highlighter/raw/refs/heads/main/g2b-highlighter.user.js
+// @updateURL    https://github.com/Alt030/g2b-highlighter/raw/refs/heads/main/g2b-highlighter.user.js
 // @grant        none
 // ==/UserScript==
 
