@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         G2B Highlighter
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
-// @description  Virtual scroll 환경에서의 입찰공고 하이라이트 기능
+// @version      1.0.1
+// @description  Virtual scroll 환경에서의 입찰공고 하이라이트 기능(공고번호 포함)
 // @author       You
 // @match        https://www.g2b.go.kr/*
 // @downloadURL  https://raw.githubusercontent.com/Alt030/g2b-highlighter/main/g2b-highlighter.user.js
