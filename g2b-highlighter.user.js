@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         G2B Highlighter (수정 버전)
+// @name         G2B Highlighter (2주 만료 기능 추가)
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
-// @description  가상 스크롤 환경에서 입찰공고 클릭 기록에 따른 하이라이트(공고번호 변경 시 하이라이트 제거)
+// @version      1.1.0
+// @description  가상 스크롤 환경에서 입찰공고 클릭 기록에 따른 하이라이트(2주 이후 자동 삭제)
 // @author       You
 // @match        https://www.g2b.go.kr/*
 // @downloadURL  https://github.com/Alt030/g2b-highlighter/raw/refs/heads/main/g2b-highlighter.user.js
@@ -12,6 +12,8 @@
 
 (function() {
     'use strict';
+
+    const TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // 14일 (2주) 밀리초 단위
 
     // 스타일 정의
     const addStyles = () => {
@@ -28,6 +30,17 @@
         document.head.appendChild(style);
     };
 
+    // 로컬스토리지의 clickedBids 데이터를 읽어오고, 만료(2주 이상 지난) 항목을 제거한 후 반환
+    const getFreshClickedBids = () => {
+        const now = Date.now();
+        let clickedBids = JSON.parse(localStorage.getItem('clickedBids')) || [];
+        // 만료된 항목 제거
+        clickedBids = clickedBids.filter(bid => now - bid.timestamp < TWO_WEEKS);
+        // 만료된 항목이 제거되었다면 다시 저장
+        localStorage.setItem('clickedBids', JSON.stringify(clickedBids));
+        return clickedBids;
+    };
+
     // 클릭 이벤트 핸들러 - 이벤트 위임 방식 사용
     const handleBidClick = (event) => {
         const link = event.target.closest('td[col_id="bidPbancNm"] nobr a');
@@ -40,12 +53,13 @@
 
         if (!bidNumber) return;
 
-        const clickedBids = JSON.parse(localStorage.getItem('clickedBids')) || [];
+        const now = Date.now();
+        let clickedBids = getFreshClickedBids();
         const bidIdentifier = `${bidName}||${bidNumber}`;
 
-        // 중복 체크 후 저장
-        if (!clickedBids.includes(bidIdentifier)) {
-            clickedBids.push(bidIdentifier);
+        // 중복 체크 후 저장 (객체 배열에서 id 속성을 검사)
+        if (!clickedBids.some(bid => bid.id === bidIdentifier)) {
+            clickedBids.push({ id: bidIdentifier, timestamp: now });
             localStorage.setItem('clickedBids', JSON.stringify(clickedBids));
             console.log(`Saved bid: ${bidName} (${bidNumber})`);
         }
@@ -53,7 +67,7 @@
 
     // 하이라이트 적용 함수 (모든 링크를 매번 검사)
     const applyHighlight = () => {
-        const clickedBids = JSON.parse(localStorage.getItem('clickedBids')) || [];
+        const clickedBids = getFreshClickedBids();
         // 테이블에 존재하는 모든 입찰 공고 링크를 검사합니다.
         const bidLinks = document.querySelectorAll('td[col_id="bidPbancNm"] nobr a');
         bidLinks.forEach(link => {
@@ -65,8 +79,8 @@
             if (!bidNumber) return;
 
             const bidIdentifier = `${bidName}||${bidNumber}`;
-            // 저장된 클릭 기록과 일치하면 하이라이트, 그렇지 않으면 제거
-            if (clickedBids.includes(bidIdentifier)) {
+            // 저장된 클릭 기록에 해당 객체가 있으면 하이라이트, 아니면 제거
+            if (clickedBids.some(bid => bid.id === bidIdentifier)) {
                 link.classList.add('bid-highlighted');
             } else {
                 link.classList.remove('bid-highlighted');
