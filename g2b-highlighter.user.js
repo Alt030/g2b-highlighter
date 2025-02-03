@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         G2B Highlighter
+// @name         G2B Highlighter (수정 버전)
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
-// @description  Virtual scroll 환경에서의 입찰공고 하이라이트 기능(공고번호 포함)
+// @version      1.0.4
+// @description  가상 스크롤 환경에서 입찰공고 클릭 기록에 따른 하이라이트(공고번호 변경 시 하이라이트 제거)
 // @author       You
 // @match        https://www.g2b.go.kr/*
 // @downloadURL  https://github.com/Alt030/g2b-highlighter/raw/refs/heads/main/g2b-highlighter.user.js
@@ -51,13 +51,12 @@
         }
     };
 
-    // 가상 스크롤 환경에서의 하이라이트 적용 함수
+    // 하이라이트 적용 함수 (모든 링크를 매번 검사)
     const applyHighlight = () => {
         const clickedBids = JSON.parse(localStorage.getItem('clickedBids')) || [];
-        const bidLinks = document.querySelectorAll('td[col_id="bidPbancNm"] nobr a:not(.processed)');
-
+        // 테이블에 존재하는 모든 입찰 공고 링크를 검사합니다.
+        const bidLinks = document.querySelectorAll('td[col_id="bidPbancNm"] nobr a');
         bidLinks.forEach(link => {
-            link.classList.add('processed');
             const bidName = link.innerText.trim();
             const bidRow = link.closest('tr');
             const bidNumberCell = bidRow.querySelector('td[col_id="bidPbancUntyNoOrd"] nobr');
@@ -66,8 +65,11 @@
             if (!bidNumber) return;
 
             const bidIdentifier = `${bidName}||${bidNumber}`;
+            // 저장된 클릭 기록과 일치하면 하이라이트, 그렇지 않으면 제거
             if (clickedBids.includes(bidIdentifier)) {
                 link.classList.add('bid-highlighted');
+            } else {
+                link.classList.remove('bid-highlighted');
             }
         });
     };
@@ -99,7 +101,7 @@
         // 이벤트 위임을 사용한 클릭 이벤트 처리
         document.addEventListener('click', handleBidClick, true);
 
-        // 스크롤 이벤트 처리
+        // 스크롤 이벤트 처리 (스크롤 시에도 하이라이트를 재검사)
         const scrollContainer = document.querySelector('#mf_wfm_container_tacBidPbancLst_contents_tab2_body_gridView1_scrollY_div');
         if (scrollContainer) {
             scrollContainer.addEventListener('scroll', () => {
@@ -111,7 +113,7 @@
         setupObserver();
     };
 
-    // 페이지 로드 및 뒤로가기 처리
+    // 페이지 로드 및 bfcache 복원 처리
     window.addEventListener('pageshow', (event) => {
         if (event.persisted) {
             console.log('Page restored from bfcache');
@@ -119,7 +121,7 @@
         initialize();
     });
 
-    // popstate 이벤트도 처리 (뒤로가기/앞으로가기)
+    // popstate 이벤트 (뒤로가기/앞으로가기) 처리
     window.addEventListener('popstate', () => {
         console.log('Navigation occurred');
         setTimeout(initialize, 100);
